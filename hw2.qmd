@@ -139,7 +139,6 @@ df %>%
 
 ```
 
-
 ```{R}
 
 df %>%
@@ -150,6 +149,11 @@ df %>%
 
 ```
 
+There is a notable difference between infant abalones as opposed to male
+and female abalones with infant abalones having a lower length and
+diameter on average(which is expected). However, male and female
+abalones have no notable differences in their physical appearance.
+
 ------------------------------------------------------------------------
 
 ###### 1.5 (5 points)
@@ -159,9 +163,20 @@ and color of the points based on the `sex` variable. Change the size of
 each point based on the `shell_wight` value for each observation. Are
 there any notable anomalies in the dataset?
 
-``` r
-... # Insert your code here
+```{R}
+
+df %>%
+  ggplot(aes(x=length, y=diameter)) +
+  geom_point(aes(shape=sex, color=sex, size=shell_weight))
+  
+
+
 ```
+
+There are a few notable anomalies in the dataset. One is an infant
+abalone which has an uncharacteristically high diameter and shell weight
+for its length. There is also a male abalone with an
+uncharacteristically low diameter for its length.
 
 ------------------------------------------------------------------------
 
@@ -177,9 +192,14 @@ horizontally. You should end up with a plot that looks like this: [^2]
     [![](images/lines.png){style="height: 5em;"}]{.content-visible
     when-format="html"}
 
-``` r
-... # Insert your code here
+```{R}
+
+
+
+
+
 ```
+
 
 <br><br><br><br> <br><br><br><br> ---
 
