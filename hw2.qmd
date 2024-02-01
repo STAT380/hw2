@@ -194,7 +194,11 @@ horizontally. You should end up with a plot that looks like this: [^2]
 
 ```{R}
 
-
+df %>%
+  ggplot(aes(x=length, y=height)) +
+  geom_point(aes(color=sex)) +
+  geom_smooth() +
+  facet_wrap("sex", ncol=1)
 
 
 
