@@ -111,11 +111,17 @@ Plot histograms of all the quantitative variables in a **single plot**
 
 ```{R}
 
+tmp <- df %>%
+  pivot_longer(!sex, names_to = "stats", values_to = "count")
 
+
+tmp %>%
+  ggplot(aes(x = count)) +
+  geom_histogram() +
+  facet_wrap("stats")
 
 
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -125,12 +131,23 @@ Create a boxplot of `length` for each `sex` and create a violin-plot of
 of `diameter` for each `sex`. Are there any notable differences in the
 physical appearences of abalones based on your analysis here?
 
-``` r
-... # Insert your code for boxplot here
+```{R}
+
+df %>%
+  ggplot(aes(x=sex, y=length)) +
+  geom_boxplot()
+
 ```
 
-``` r
-... # Insert your code for violinplot here
+
+```{R}
+
+df %>%
+  ggplot(aes(x=sex, y=diameter)) +
+  geom_violin()
+
+
+
 ```
 
 ------------------------------------------------------------------------
