@@ -111,11 +111,11 @@ Plot histograms of all the quantitative variables in a **single plot**
 
 ```{R}
 
-tmp <- df %>%
+df_quant_histogram <- df %>%
   pivot_longer(!sex, names_to = "stats", values_to = "count")
 
 
-tmp %>%
+df_quant_histogram %>%
   ggplot(aes(x = count)) +
   geom_histogram() +
   facet_wrap("stats")
@@ -224,9 +224,17 @@ meters. Group the data by `sex` and calculate the mean of each variable
 for each group. Create a bar plot to visualize the mean values for each
 variable by `sex`.
 
-``` r
-df %>% ... # Insert your code here
+```{R}
+
+high_length_abalone <- df %>% 
+  group_by(sex) %>% 
+  filter(length >= 0.5) %>%
+  summarise(across(c(length, diameter, height, whole_weight, shucked_weight, viscera_weight, shell_weight, rings), mean, na.rm=TRUE))
+
+high_length_abalone
+
 ```
+
 
 ------------------------------------------------------------------------
 
@@ -250,9 +258,20 @@ Implement the following in a **single command**:
     vs `sex` with the color indicating of each tile indicating the
     `avg_weight` value.
 
-``` r
-df %>% ... # Insert your code here
+```{R}
+
+ring_count <- df %>%
+  mutate(num_rings=ifelse(rings < 10, "low", ifelse(rings > 20, "high", "med"))) %>%
+  group_by(num_rings, sex) %>%
+  summarise(avg_weight=mean(whole_weight)+mean(shucked_weight)+mean(viscera_weight)+mean(shell_weight))
+
+ring_count %>%
+  ggplot(aes(x=sex, y=num_rings)) +
+  geom_tile(aes(fill=avg_weight))
+
+
 ```
+
 
 ------------------------------------------------------------------------
 
