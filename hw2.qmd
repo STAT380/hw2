@@ -204,7 +204,6 @@ df %>%
 
 ```
 
-
 <br><br><br><br> <br><br><br><br> ---
 
 ## Question 2
@@ -234,7 +233,6 @@ high_length_abalone <- df %>%
 high_length_abalone
 
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -272,7 +270,6 @@ ring_count %>%
 
 ```
 
-
 ------------------------------------------------------------------------
 
 ###### 2.3 (5 points)
@@ -301,9 +298,13 @@ grid of plots.
 ![](images/plot_grid.png)
 :::
 
-``` r
-... # Insert your code here
+```{R}
+
+df %>% map2(
+
+
 ```
+
 
 <br><br><br><br> <br><br><br><br> ---
 
@@ -323,9 +324,15 @@ Perform a simple linear regression with `diameter` as the covariate and
 `height` as the response. Interpret the model coefficients and their
 significance values.
 
-``` r
-... # Insert your code here
+```{R}
+
+lm_diameter <- lm(height ~ diameter, data = df)
+
+summary(lm_diameter)
+
+
 ```
+The intercept being slightly negative at -0.003803 indicates that the regression line hits the y-axis at a point where y < 0.  Additionally, the diameter coefficient being at 0.351376 estimates a increase of that much per unit of height.  The p-value being much less than 0.05 indicates significance in this relationship.
 
 ------------------------------------------------------------------------
 
@@ -336,9 +343,19 @@ line in `color="red"`. You can use the base `plot()` function in R for
 this. Is the linear model an appropriate fit for this relationship?
 Explain.
 
-``` r
-... # Insert your code here
+```{R}
+
+x <- df$height
+y <- df$diameter
+
+plot(x, y)
+
+abline(lm(y ~ x, data=df), col='red')
+
+
+
 ```
+This linear model is generally an 
 
 ------------------------------------------------------------------------
 
