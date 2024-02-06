@@ -230,7 +230,11 @@ high_length_abalone <- df %>%
   filter(length >= 0.5) %>%
   summarise(across(c(length, diameter, height, whole_weight, shucked_weight, viscera_weight, shell_weight, rings), mean, na.rm=TRUE))
 
-high_length_abalone
+high_length_longer <- high_length_abalone %>% pivot_longer(!sex, names_to = "stats", values_to = "values")
+
+ggplot(data = high_length_longer, aes(x=stats, y=values)) +
+  geom_col()+
+  facet_wrap(~sex, ncol = 1)
 
 ```
 
@@ -283,6 +287,14 @@ like this [^3]
 ``` r
 df %>% ... # Insert your code here
 ```
+```{R}
+
+df_num <- df %>% select(length, diameter, height, whole_weight, shucked_weight, viscera_weight, shell_weight, rings)
+
+cor(df_num) %>% round(2)
+
+```
+
 
 ------------------------------------------------------------------------
 
@@ -345,17 +357,19 @@ Explain.
 
 ```{R}
 
-x <- df$height
-y <- df$diameter
+x <- df$diameter
+y <- df$height
 
-plot(x, y)
+regr_hd <- data.frame(x, y)
 
-abline(lm(y ~ x, data=df), col='red')
+plot(regr_hd)
+
+abline(lm(y ~ x), col='red')
 
 
 
 ```
-This linear model is generally an 
+The linear model is generally an appropriate fit for this relationship becauseit represents most of the points where are either along the line or around it.  The points also show a positive linear relationship just like the line predicts.  
 
 ------------------------------------------------------------------------
 
@@ -366,8 +380,7 @@ Suppose we have collected observations for "new" abalones with
 `height` based on your model above? Plot these new observations along
 with your predictions in your plot from earlier using `color="violet"`
 
-``` r
-
+```{R}
 new_diameters <- c(
   0.15218946,
   0.48361548,
@@ -380,9 +393,25 @@ new_diameters <- c(
   0.94245437,
   0.01209518
 )
+```
 
 
-... # Insert your code here. 
+
+```{R}
+
+x <- df$diameter
+y <- df$height
+
+plot(x, y)
+
+abline(lm(y ~ x), col='red')
+
+
+lines(x, new_diameters, col='violet')
+
+
+```
+
 ```
 
 ::: {.hidden unless-format="pdf"}
