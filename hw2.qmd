@@ -416,8 +416,13 @@ abline(lm(y ~ x), col='red')
 
 project <- lm(y ~ x)
 
-predict(project,new_data= new_diameters)
+new_y <- predict(project,new_data= new_diameters)
 
+final_x <- rbind(x, new_diameters)
+final_y <- rbind(y, new_y)
+
+points(final_x, final_y)
+abline(lm(final_y ~ final_x), col='violet')
 
 ```
 
