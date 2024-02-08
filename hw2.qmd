@@ -118,7 +118,7 @@ df_quant_histogram <- df %>%
 df_quant_histogram %>%
   ggplot(aes(x = count)) +
   geom_histogram() +
-  facet_wrap("stats")
+  facet_wrap("stats", scales = "free")
 
 
 ```
@@ -234,7 +234,7 @@ high_length_longer <- high_length_abalone %>% pivot_longer(!sex, names_to = "sta
 
 ggplot(data = high_length_longer, aes(x=stats, y=values)) +
   geom_col()+
-  facet_wrap(~sex, ncol = 1)
+  facet_wrap(~sex,ncol=1)
 
 ```
 
@@ -312,7 +312,15 @@ grid of plots.
 
 ```{R}
 
-df %>% map2(
+df %>% 
+  select(c(length, diameter, height, whole_weight, shucked_weight, viscera_weight, shell_weight, rings)) %>%
+  map2(., colnames(.), ~{
+    ggplot(df) +
+      geom_point(aes(x=rings, y=.,color=sex))+
+      ggtitle(as.character(.y))
+  }
+  ) %>%
+    cowplot::plot_grid(plotlist = .)
 
 
 ```
@@ -406,8 +414,9 @@ plot(x, y)
 
 abline(lm(y ~ x), col='red')
 
+project <- lm(y ~ x)
 
-lines(x, new_diameters, col='violet')
+predict(project,new_data= new_diameters)
 
 
 ```
