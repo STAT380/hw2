@@ -94,6 +94,7 @@ data in a tibble called `df`. How many rows were dropped?
 
 df <- na.omit(abalone)
 
+df
 
 ```
 
@@ -284,9 +285,6 @@ like this [^3]
 
 [^3]: Table for 2.3<br>
 
-``` r
-df %>% ... # Insert your code here
-```
 ```{R}
 
 df_num <- df %>% select(length, diameter, height, whole_weight, shucked_weight, viscera_weight, shell_weight, rings)
