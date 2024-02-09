@@ -306,8 +306,12 @@ grid of plots.
 ![](images/plot_grid.png)
 :::
 
-``` r
-... # Insert your code here
+```{r}
+plot <- map2(select(df, where(is.numeric)), 
+     names(select(df, where(is.numeric))),
+     ~ ggplot(df, aes(x = rings, y = .data[[.y]], color = sex)) +
+         geom_point())
+plot_grid(plotlist = plot)
 ```
 
 <br><br><br><br> <br><br><br><br> ---
@@ -328,9 +332,14 @@ Perform a simple linear regression with `diameter` as the covariate and
 `height` as the response. Interpret the model coefficients and their
 significance values.
 
-``` r
-... # Insert your code here
+```{r}
+slr <- lm(height ~ diameter, data = df)
+slr
 ```
+
+The interception represents the height when the diameter is 0 so that
+would be -0.003803 and for every .1 unit of change of height the
+diameter changes by 0.351376
 
 ------------------------------------------------------------------------
 
@@ -341,9 +350,17 @@ line in `color="red"`. You can use the base `plot()` function in R for
 this. Is the linear model an appropriate fit for this relationship?
 Explain.
 
-``` r
-... # Insert your code here
+```{r}
+ggplot(df, aes(diameter, height)) +
+  geom_point() + geom_smooth(color="red")
+  stat_smooth(method = lm)
 ```
+
+\
+By looking at this scatter plot we could see that the relationship seems
+relatively linear and we see that it sort of matches the simple linear
+regression from the last question. but we also see that there is 2
+outliers but other than that this plot seems rather appropriate fit
 
 ------------------------------------------------------------------------
 
@@ -354,8 +371,7 @@ Suppose we have collected observations for "new" abalones with
 `height` based on your model above? Plot these new observations along
 with your predictions in your plot from earlier using `color="violet"`
 
-``` r
-
+```{r}
 new_diameters <- c(
   0.15218946,
   0.48361548,
@@ -368,9 +384,21 @@ new_diameters <- c(
   0.94245437,
   0.01209518
 )
+intercept <- -0.003803 
+coefficient <- 0.351376  
+expected_heights <- intercept + coefficient * new_diameters
+expected_heights
 
+plot(df$diameter, df$height, col = "blue")
+points(new_diameters, expected_heights, col = "violet")
+legend("topright",legend = c("old", "predicted new"), col = c("blue", "violet"), pch = c(1, 1))
 
-... # Insert your code here. 
+```
+
+expected heights are
+
+```         
+ 0.049672724 0.166127873 0.200330690 0.022914531 0.172709325 0.289462760 0.332400366 0.322649461 0.327352847 0.000446956
 ```
 
 ::: {.hidden unless-format="pdf"}
