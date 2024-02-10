@@ -1,11 +1,11 @@
 ---
 title: "Homework 2"
-author: "[Insert your name here]{style='background-color: yellow;'}"
+author: "[Antonio Spataro]{style='background-color: yellow;'}"
 toc: true
 title-block-banner: true
 title-block-style: default
 format: html
-# format: pdf
+#format: pdf
 ---
 
 [Link to the Github repository](https://github.com/STAT380/hw2.git)
@@ -29,6 +29,14 @@ For this assignment, we will be using the [Abalone dataset](http://archive.ics.u
 We will be using the following libraries:
 
 ```R
+library(readr)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(purrr)
+library(cowplot)
+```
+```{R}
 library(readr)
 library(tidyr)
 library(ggplot2)
@@ -69,6 +77,25 @@ abalone_col_names <- c(
 
 abalone <- ... # Insert your code here
 ```
+```{R}
+library(readr)
+url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data"
+
+abalone_col_names <- c(
+  "sex", 
+  "length", 
+  "diameter", 
+  "height", 
+  "whole_weight", 
+  "shucked_weight", 
+  "viscera_weight", 
+  "shell_weight", 
+  "rings"
+)
+
+abalone <- read_csv(url, col_names = abalone_col_names)
+```
+
 
 ---
 
@@ -80,6 +107,13 @@ Remove missing values and `NA`s from the dataset and store the cleaned data in a
 df <- ... # Insert your code here
 ```
 
+```{R}
+df <- abalone %>%
+  drop_na()
+
+rows_dropped <- nrow(abalone) - nrow(df)
+rows_dropped
+```
 
 
 
@@ -92,6 +126,19 @@ Plot histograms of all the quantitative variables in a **single plot** [^footnot
 ```R
 ... # Insert your code here
 ```
+```{R}
+df_long <- pivot_longer(df, cols = -sex, names_to = "variable", values_to = "value")
+
+quantitative_vars <- df_long[df_long$variable %in% abalone_col_names, ]
+
+histogram_plot <- ggplot(quantitative_vars, aes(x = value)) +
+  geom_histogram(bins = 20, fill = "skyblue", color = "black") +
+  facet_wrap(~variable, scales = "free") +
+  labs(title = "Histograms of Quantitative Variables") +
+  theme_minimal()
+
+histogram_plot
+```
 
 
 ---
@@ -100,12 +147,30 @@ Plot histograms of all the quantitative variables in a **single plot** [^footnot
 
 Create a boxplot of `length` for each `sex` and create a violin-plot of of `diameter` for each `sex`. Are there any notable differences in the physical appearences of abalones based on your analysis here?
 
+They have different physical shapes. For example, one is a box plot and the other is a violin plot. However, their overall shapes are similar. 
+
 ```R
 ... # Insert your code for boxplot here
+```
+```{R}
+boxplot_length <- ggplot(df, aes(x = sex, y = length)) +
+  geom_boxplot(fill = "skyblue", color = "black") +
+  labs(title = "Boxplot of Length by Sex", x = "Sex", y = "Length") +
+  theme_minimal()
+
+boxplot_length
 ```
 
 ```R
 ... # Insert your code for violinplot here
+```
+```{R}
+violin_diameter <- ggplot(df, aes(x = sex, y = diameter)) +
+  geom_violin(fill = "skyblue") +
+  labs(title = "Violin Plot of Diameter by Sex", x = "Sex", y = "Diameter") +
+  theme_minimal()
+
+violin_diameter
 ```
 
 
@@ -115,10 +180,25 @@ Create a boxplot of `length` for each `sex` and create a violin-plot of of `diam
 
 Create a scatter plot of `length` and `diameter`, and modify the shape and color of the points based on the `sex` variable. Change the size of each point based on the `shell_wight` value for each observation. Are there any notable anomalies in the dataset?
 
-
+1 sex: I is an outlier on the graph
 
 ```R
 ... # Insert your code here
+```
+```{R}
+scatter_plot <- ggplot(df, aes(x = length, y = diameter, shape = sex, color = sex, size = shell_weight)) +
+  geom_point() +
+  scale_shape_manual(values = c("F" = 16, "M" = 17, "I" = 15)) +  
+  scale_color_manual(values = c("F" = "blue", "M" = "red", "I" = "green")) +
+  labs(title = "Scatter Plot of Length and Diameter by Sex",
+       x = "Length",
+       y = "Diameter",
+       shape = "Sex",
+       color = "Sex",
+       size = "Shell Weight") +
+  theme_minimal()
+
+scatter_plot
 ```
 
 ---
@@ -130,6 +210,19 @@ For each `sex`, create separate scatter plots of `length` and `diameter`. For ea
 
 ```R
 ... # Insert your code here
+```
+```{R}
+scatter_plot <- ggplot(df, aes(x = length, y = diameter, color = sex)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  
+  labs(title = "Scatter Plot of Length and Diameter by Sex",
+       x = "Length",
+       y = "Diameter") +
+  facet_wrap(~sex, nrow = 3) +  
+  scale_color_manual(values = c("F" = "red", "M" = "blue", "I" = "green")) +
+  theme_minimal()
+
+scatter_plot
 ```
 
 
@@ -157,6 +250,27 @@ Filter the data to only include abalone with a length of at least $0.5$ meters. 
 ```R
 df %>% ... # Insert your code here
 ```
+```{R}
+filtered_df <- df %>% 
+  filter(length >= 0.5)
+
+mean_values <- filtered_df %>%
+  group_by(sex) %>%
+  summarise_all(mean)
+
+mean_values_long <- pivot_longer(mean_values, cols = -sex, names_to = "variable", values_to = "mean_value")
+
+bar_plot <- ggplot(mean_values_long, aes(x = variable, y = mean_value, fill = sex)) +
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  labs(title = "Mean Values of Variables by Sex",
+       x = "Variable",
+       y = "Mean Value",
+       fill = "Sex") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+bar_plot
+```
 
 
 ---
@@ -179,6 +293,29 @@ Implement the following in a **single command**:
 ```R
 df %>% ... # Insert your code here
 ```
+```{R}
+df <- df %>%
+  mutate(num_rings = case_when(
+    rings < 10 ~ "low",
+    rings > 20 ~ "high",
+    TRUE ~ "med"
+  ))
+
+df_avg_weight <- df %>%
+  group_by(num_rings, sex) %>%
+  summarise(avg_weight = mean(whole_weight + shucked_weight + viscera_weight + shell_weight))
+
+tile_plot <- ggplot(df_avg_weight, aes(x = sex, y = num_rings, fill = avg_weight)) +
+  geom_tile(color = "black") +
+  scale_fill_gradient(low = "lightblue", high = "darkblue") +
+  labs(title = "Average Weight by num_rings and Sex",
+       x = "Sex",
+       y = "Number of Rings",
+       fill = "Average Weight") +
+  theme_minimal()
+
+tile_plot
+```
 
 
 
@@ -191,6 +328,14 @@ Make a table of the pairwise correlations between all the numeric variables roun
 
 ```R
 df %>% ... # Insert your code here
+```
+```{R}
+correlation_table <- df %>%
+  select_if(is.numeric) %>%
+  cor(use = "pairwise.complete.obs") %>%
+  round(., 2)
+
+correlation_table
 ```
 
 
@@ -208,6 +353,26 @@ Use the `map2()` function from the `purrr` package to create a scatter plot for 
 
 ```R
 ... # Insert your code here
+```
+```{R}
+library(purrr)
+library(cowplot)
+
+quantitative_vars <- df %>%
+  select_if(is.numeric)
+
+scatter_plots <- map2(quantitative_vars, names(quantitative_vars), function(var, name) {
+  ggplot(df, aes_string(x = "rings", y = name, color = "sex")) +
+    geom_point() +
+    labs(title = paste("Scatter plot of", name, "vs. Rings"),
+         x = "Rings",
+         y = name,
+         color = "Sex")
+})
+
+grid <- plot_grid(plotlist = scatter_plots, nrow = 3, ncol = 3)
+
+grid
 ```
 
 
@@ -229,9 +394,16 @@ Linear regression using `lm`
 
 Perform a simple linear regression with `diameter` as the covariate and `height` as the response. Interpret the model coefficients and their significance values. 
 
+The intercept coefficient is about -0.0038. Meaning when the diameter is 0 the mean height is -0.0038
 
+The diameter is approx. 0.3514 meaning for every unit increase in diameter the height is expected to increase by approx 0.3514
 ```R
 ... # Insert your code here
+```
+```{R}
+model <- lm(height ~ diameter, data = df)
+
+model
 ```
 
 
@@ -245,6 +417,16 @@ Make a scatterplot of `height` vs `diameter` and plot the regression line in `co
 
 ```R
 ... # Insert your code here
+```
+```{R}
+plot(df$diameter, df$height, xlab = "Diameter", ylab = "Height", main = "Scatterplot of Height vs Diameter")
+
+model <- lm(height ~ diameter, data = df)
+
+abline(model, col = "red")
+
+legend("topright", legend = "Regression Line", col = "red", lty = 1, cex = 0.8)
+
 ```
 
 
@@ -272,6 +454,29 @@ new_diameters <- c(
 
 
 ... # Insert your code here. 
+```
+```{R}
+new_diameters <- c(
+  0.15218946,
+  0.48361548,
+  0.58095513,
+  0.07603687,
+  0.50234599,
+  0.83462092,
+  0.95681938,
+  0.92906875,
+  0.94245437,
+  0.01209518
+)
+
+new_predictions <- predict(model, newdata = data.frame(diameter = new_diameters))
+
+plot(df$diameter, df$height, xlab = "Diameter", ylab = "Height", main = "Scatterplot of Height vs Diameter", col = "black")
+abline(model, col = "red")
+
+points(new_diameters, new_predictions, col = "violet", pch = 19)
+legend("topright", legend = c("Data", "Regression Line", "New Observations"), col = c("black", "red", "violet"), pch = c(1, NA, 19))
+
 ```
 
 
